@@ -6,6 +6,55 @@
   <meta name="theme-color" content="#0b1220" />
   <title>BTO Office Days Calculator</title>
   <style>
+    .site-footer {
+    text-align: center;
+    padding: 28px 16px;
+    margin-top: 32px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .gita-shloka {
+    margin-bottom: 20px;
+  }
+
+  .gita-title {
+    color: #b7791f;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .gita-sanskrit {
+    color: #334155;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.9;
+    margin: 0 0 6px;
+  }
+
+  .gita-meaning {
+    font-style: italic;
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .footer-divider {
+    width: 60px;
+    height: 1px;
+    background: #cbd5e1;
+    margin: 18px auto;
+  }
+
+  .copyright {
+    font-weight: 600;
+    margin: 8px 0;
+  }
+
+  .footer-disclaimer {
+    margin: 5px 0;
+  }
     :root {
       --bg: #0b1220;
       --panel: rgba(19, 29, 49, .88);
@@ -88,6 +137,11 @@
       .card { padding:20px; border-radius:18px; }
       .brand { margin-bottom:22px; }
     }
+    @media (max-width: 600px) {
+    .gita-sanskrit {
+      font-size: 14px;
+    }
+  }
   </style>
 </head>
 <body>
@@ -158,12 +212,29 @@
         <p class="note" id="note">Weekdays are Monday–Friday. Public holidays and leaves are deducted from the weekday count. The required days are rounded up to the next whole day.</p>
       </section>
     </div>
-    <footer>
-  © 2026 Devang Sandeep Raut · Nallasopara
-  <br />
-  Not an official Capgemini system or policy document.
-  <br />
-  Public holiday dates are not automatically detected; enter only the PH count for your applicable calendar.
+    <footer class="site-footer">
+  <div class="gita-shloka">
+    <p class="gita-title">॥ श्रीमद्भगवद्गीता २.४७ ॥</p>
+
+    <p class="gita-sanskrit">
+      कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।
+    </p>
+
+    <p class="gita-meaning">
+      Focus on your duty. Let go of the outcome.
+    </p>
+  </div>
+
+  <div class="footer-divider"></div>
+
+  <p class="copyright">
+    © 2026 Devang Sandeep Raut · Nallasopara
+  </p>
+
+  <p class="footer-disclaimer">
+    Not an official Capgemini system or policy document.
+  </p>
+
 </footer>
   </main>
 
