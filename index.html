@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>BTO Office Days Calculator</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: rgba(19, 29, 49, .88);
+      --panel2: #111c30;
+      --text: #eef4ff;
+      --muted: #9eacc4;
+      --line: rgba(173, 194, 228, .16);
+      --blue: #6ea8fe;
+      --cyan: #65e0d2;
+      --green: #8be3b0;
+      --amber: #ffd27d;
+      --danger: #ff9a9a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(61, 110, 210, .25), transparent 30rem),
+        radial-gradient(circle at 90% 30%, rgba(40, 180, 170, .12), transparent 28rem),
+        var(--bg);
+      padding: 32px 16px 24px;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; }
+    .brand { display:flex; align-items:center; gap:12px; margin-bottom:28px; }
+    .logo {
+      width: 44px; height: 44px; border-radius: 14px; display:grid; place-items:center;
+      background: linear-gradient(135deg, var(--blue), var(--cyan)); color:#07111f; font-weight:900;
+      box-shadow: 0 8px 30px rgba(80, 160, 255, .2);
+    }
+    .brand small { display:block; color:var(--muted); margin-top:3px; }
+    h1 { margin:0; font-size: clamp(1.65rem, 4vw, 2.35rem); letter-spacing:-.04em; }
+    .intro { color:var(--muted); line-height:1.65; max-width:700px; margin:0 0 24px; }
+    .layout { display:grid; grid-template-columns: 1fr 1.1fr; gap:18px; align-items:start; }
+    .card {
+      background:var(--panel); border:1px solid var(--line); border-radius:22px;
+      padding:24px; box-shadow:0 18px 55px rgba(0,0,0,.18); backdrop-filter: blur(12px);
+    }
+    .card h2 { font-size:1.05rem; margin:0 0 18px; }
+    .field { margin-bottom:18px; }
+    label { display:block; color:#dce7fb; font-size:.9rem; font-weight:650; margin-bottom:8px; }
+    select, input {
+      width:100%; border:1px solid rgba(173,194,228,.24); border-radius:12px;
+      padding:12px 13px; background:#0c1628; color:var(--text); font:inherit; outline:none;
+    }
+    select:focus, input:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(110,168,254,.14); }
+    .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .hint { color:var(--muted); font-size:.78rem; line-height:1.5; margin-top:7px; }
+    .rate {
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      border:1px solid var(--line); background:rgba(110,168,254,.07); padding:13px 14px; border-radius:12px;
+      margin-top:4px;
+    }
+    .rate span:first-child { color:var(--muted); font-size:.88rem; }
+    .rate strong { font-size:1.05rem; }
+    .result-card { overflow:hidden; }
+    .result-top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:18px; }
+    .month-label { color:var(--muted); font-size:.9rem; margin-bottom:5px; }
+    .big-number { font-size:clamp(3rem, 8vw, 4.4rem); line-height:1; font-weight:850; letter-spacing:-.07em; }
+    .big-number span { font-size:1rem; letter-spacing:0; color:var(--muted); font-weight:600; }
+    .badge { white-space:nowrap; border-radius:99px; padding:7px 10px; color:var(--green); background:rgba(139,227,176,.1); border:1px solid rgba(139,227,176,.2); font-size:.75rem; font-weight:750; }
+    .stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:20px 0; }
+    .stat { border:1px solid var(--line); background:rgba(255,255,255,.025); border-radius:14px; padding:14px; }
+    .stat span { display:block; color:var(--muted); font-size:.78rem; margin-bottom:7px; }
+    .stat strong { font-size:1.35rem; }
+    .math { padding:15px; border-radius:14px; background:#0a1424; border:1px solid var(--line); }
+    .math-title { color:var(--muted); font-size:.78rem; margin-bottom:8px; }
+    .equation { font-weight:700; line-height:1.7; overflow-wrap:anywhere; }
+    .equation em { color:var(--cyan); font-style:normal; }
+    .progress-wrap { margin-top:18px; }
+    .progress-head { display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:.8rem; margin-bottom:8px; }
+    .bar { height:8px; background:rgba(173,194,228,.12); border-radius:99px; overflow:hidden; }
+    .bar > div { height:100%; width:0%; background:linear-gradient(90deg,var(--blue),var(--cyan)); border-radius:99px; transition:width .25s ease; }
+    .note { margin-top:18px; color:var(--muted); font-size:.8rem; line-height:1.6; }
+    .error { display:none; color:var(--danger); font-size:.83rem; margin-top:12px; }
+    footer { text-align:center; color:#73829b; font-size:.78rem; margin:24px 0 0; line-height:1.6; }
+    @media (max-width:720px) {
+      body { padding:22px 13px; }
+      .layout { grid-template-columns:1fr; }
+      .card { padding:20px; border-radius:18px; }
+      .brand { margin-bottom:22px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="brand">
+      <div class="logo">BTO</div>
+      <div>
+        <h1>Office Days Calculator</h1>
+        <small>Monthly attendance planning, made simple</small>
+      </div>
+    </header>
+    <p class="intro">Choose a month and year, enter your public holidays and leaves, and get an estimate of the office days required. Weekdays are calculated automatically—no need to enter working days yourself.</p>
+
+    <div class="layout">
+      <section class="card" aria-labelledby="inputs-heading">
+        <h2 id="inputs-heading">Your month</h2>
+        <div class="two">
+          <div class="field">
+            <label for="month">Month</label>
+            <select id="month"></select>
+          </div>
+          <div class="field">
+            <label for="year">Year</label>
+            <input id="year" type="number" min="2000" max="2100" value="2026" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="holidays">Public holidays (PH)</label>
+          <input id="holidays" type="number" min="0" step="1" value="1" inputmode="numeric" />
+          <div class="hint">Enter the number of public holidays that fall on your working days in this month.</div>
+        </div>
+        <div class="field">
+          <label for="leaves">Leaves</label>
+          <input id="leaves" type="number" min="0" step="1" value="2" inputmode="numeric" />
+          <div class="hint">Enter the number of leave days that count against your monthly working days.</div>
+        </div>
+        <div class="rate">
+          <span>Attendance rate used</span>
+          <strong>60%</strong>
+        </div>
+        <div class="hint">This is set to 60% based on the example formula discussed. Confirm your current internal BTO policy if your rate differs.</div>
+        <div class="error" id="error" role="alert"></div>
+      </section>
+
+      <section class="card result-card" aria-live="polite" aria-labelledby="result-heading">
+        <div class="result-top">
+          <div>
+            <div class="month-label" id="selected-month">September 2026</div>
+            <h2 id="result-heading" style="margin:0 0 10px">Required office days</h2>
+            <div class="big-number"><span id="required">10</span> <span>days</span></div>
+          </div>
+          <div class="badge">Estimated result</div>
+        </div>
+        <div class="stats">
+          <div class="stat"><span>Weekdays in month</span><strong id="weekdays">22</strong></div>
+          <div class="stat"><span>Adjusted working days</span><strong id="adjusted">19</strong></div>
+          <div class="stat"><span>PH + leaves deducted</span><strong id="deducted">3</strong></div>
+          <div class="stat"><span>Attendance target before rounding</span><strong id="raw">9.5</strong></div>
+        </div>
+        <div class="math">
+          <div class="math-title">Calculation</div>
+          <div class="equation" id="equation">(<em>22</em> weekdays − <em>1</em> PH − <em>2</em> leaves) × 60% = <em>9.5</em>; rounded up to <em>10 days</em>.</div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-head"><span>Required days vs. weekdays</span><strong id="ratio">45.5%</strong></div>
+          <div class="bar"><div id="bar-fill"></div></div>
+        </div>
+        <p class="note" id="note">Weekdays are Monday–Friday. Public holidays and leaves are deducted from the weekday count. The required days are rounded up to the next whole day.</p>
+      </section>
+    </div>
+    <footer>by Devang Sandeep Raut • Not an official Capgemini system or policy document.<br />Public holiday dates are not automatically detected; enter only the PH count for your applicable calendar.</footer>
+  </main>
+
+  <script>
+    const monthSelect = document.getElementById('month');
+    const yearInput = document.getElementById('year');
+    const holidayInput = document.getElementById('holidays');
+    const leaveInput = document.getElementById('leaves');
+    const errorBox = document.getElementById('error');
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    monthNames.forEach((name, index) => {
+      const option = document.createElement('option');
+      option.value = index;
+      option.textContent = name;
+      monthSelect.appendChild(option);
+    });
+
+    const today = new Date();
+    monthSelect.value = today.getMonth();
+    yearInput.value = today.getFullYear();
+
+    function countWeekdays(year, monthIndex) {
+      const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+      let count = 0;
+      for (let day = 1; day <= daysInMonth; day++) {
+        const weekday = new Date(year, monthIndex, day).getDay();
+        if (weekday !== 0 && weekday !== 6) count++;
+      }
+      return count;
+    }
+
+    function readWholeNumber(input) {
+      const value = Number(input.value);
+      if (!Number.isInteger(value) || value < 0) return null;
+      return value;
+    }
+
+    function calculate() {
+      const monthIndex = Number(monthSelect.value);
+      const year = Number(yearInput.value);
+      const ph = readWholeNumber(holidayInput);
+      const leaves = readWholeNumber(leaveInput);
+
+      if (!Number.isInteger(year) || year < 2000 || year > 2100) {
+        showError('Please enter a year from 2000 to 2100.');
+        return;
+      }
+      if (ph === null || leaves === null) {
+        showError('PH and leaves must be whole numbers greater than or equal to zero.');
+        return;
+      }
+
+      const weekdays = countWeekdays(year, monthIndex);
+      if (ph + leaves > weekdays) {
+        showError(`PH plus leaves (${ph + leaves}) cannot exceed the ${weekdays} weekdays in this month. Check that you entered only PH falling on working days.`);
+        return;
+      }
+      errorBox.style.display = 'none';
+
+      const adjusted = weekdays - ph - leaves;
+      const raw = adjusted * 0.6;
+      const decimal = raw - Math.floor(raw);
+
+const calculatedRequired = decimal <= 0.5
+    ? Math.floor(raw)
+    : Math.ceil(raw);
+
+const required = Math.min(12, calculatedRequired);
+      const deducted = ph + leaves;
+      const ratio = weekdays === 0 ? 0 : (required / weekdays) * 100;
+
+      document.getElementById('selected-month').textContent = `${monthNames[monthIndex]} ${year}`;
+      document.getElementById('required').textContent = required;
+      document.getElementById('weekdays').textContent = weekdays;
+      document.getElementById('adjusted').textContent = adjusted;
+      document.getElementById('deducted').textContent = deducted;
+      document.getElementById('raw').textContent = Number.isInteger(raw) ? raw.toFixed(0) : raw.toFixed(1);
+      document.getElementById('equation').innerHTML =
+        `(<em>${weekdays}</em> weekdays − <em>${ph}</em> PH − <em>${leaves}</em> leaves) × 60% = <em>${Number.isInteger(raw) ? raw.toFixed(0) : raw.toFixed(1)}</em>; rounded up to <em>${required} ${required === 1 ? 'day' : 'days'}</em>.`;
+      document.getElementById('ratio').textContent = `${ratio.toFixed(1)}%`;
+      document.getElementById('bar-fill').style.width = `${Math.min(ratio, 100)}%`;
+      document.getElementById('note').textContent =
+        `For ${monthNames[monthIndex]} ${year}: ${weekdays} Monday–Friday weekdays, minus ${ph} PH and ${leaves} leave day(s), leaves ${adjusted} adjusted working days. At 60%, the target is ${Number.isInteger(raw) ? raw.toFixed(0) : raw.toFixed(1)}; rounded up, that is ${required} required office day(s).`;
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.style.display = 'block';
+    }
+
+    [monthSelect, yearInput, holidayInput, leaveInput].forEach(el => {
+      el.addEventListener('input', calculate);
+      el.addEventListener('change', calculate);
+    });
+    calculate();
+  </script>
+</body>
+</html>
